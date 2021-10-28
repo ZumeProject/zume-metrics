@@ -54,7 +54,7 @@ class Zume_Metrics_Endpoints
         global $wpdb;
         $distinct_church_locations = $wpdb->get_results( "
             SELECT Distinct( CASE
-                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin2_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin0_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL THEN lg.admin1_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL THEN lg.admin2_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL THEN lg.admin3_grid_id
@@ -84,7 +84,7 @@ class Zume_Metrics_Endpoints
         //unique locations for trainings that have completed the session 9
         $distinct_training_locations = $wpdb->get_results( "
             SELECT Distinct( CASE
-                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin2_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin0_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL THEN lg.admin1_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL THEN lg.admin2_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL THEN lg.admin3_grid_id
