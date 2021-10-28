@@ -3,12 +3,7 @@ if ( !defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly.
 
 class Zume_Metrics_Endpoints
 {
-    /**
-     * @todo Set the permissions your endpoint needs
-     * @link https://github.com/DiscipleTools/Documentation/blob/master/theme-core/capabilities.md
-     * @var string[]
-     */
-    public $permissions = [ 'access_contacts', 'dt_all_access_contacts', 'view_project_metrics' ];
+    public $permissions = [ 'dt_all_access_contacts', 'view_project_metrics' ];
 
 
     //See https://github.com/DiscipleTools/disciple-tools-theme/wiki/Site-to-Site-Link for outside of wordpress authentication
@@ -16,31 +11,12 @@ class Zume_Metrics_Endpoints
         $namespace = 'zume-metrics/v1';
 
         register_rest_route(
-            $namespace, '/endpoint', [
-                'methods'  => WP_REST_Server::CREATABLE,
-                'callback' => [ $this, 'private_endpoint' ],
-                'permission_callback' => function( WP_REST_Request $request ) {
-                    return $this->has_permission();
-                },
-            ]
-        );
-        register_rest_route(
             $namespace, '/dt-public/public_endpoint', [
                 'methods'  => "GET",
                 'callback' => [ $this, 'public_endpoint' ],
                 'permission_callback' => '__return_true',
             ]
         );
-    }
-
-
-    public function private_endpoint( WP_REST_Request $request ) {
-
-        // @todo run your function here
-
-
-
-        return true;
     }
 
     public function public_endpoint( WP_REST_Request $request ) {
@@ -52,9 +28,6 @@ class Zume_Metrics_Endpoints
         # admin 3 for big countries
         #'China', 'India', 'France', 'Spain', 'Pakistan', 'Bangladesh'
         $admin_3_countries = [ 100050711, 100219347, 100089589, 100074576, 100259978, 100018514 ];
-
-//        $list = Zume_App_Heatmap::query_saturation_list();
-//        $list2 = Zume_App_Heatmap::query_saturation_list_v2();
 
         global $wpdb;
         $distinct_church_locations = $wpdb->get_results( "
