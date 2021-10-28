@@ -53,20 +53,27 @@ class Zume_Metrics_Endpoints
 
         global $wpdb;
         $distinct_church_locations = $wpdb->get_results( "
-            SELECT DISTINCT(pm.meta_value) as grid_id
+            SELECT Distinct( CASE
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin2_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL THEN lg.admin1_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL THEN lg.admin2_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL THEN lg.admin3_grid_id
+                ELSE NULL
+            END
+            ) as grid_id
             FROM $wpdb->postmeta pm
             INNER JOIN $wpdb->posts p on ( p.ID = pm.post_id AND p.post_type = 'groups' )
             INNER JOIN $wpdb->postmeta pm2 on ( pm.post_id = pm2.post_id AND pm2.meta_key = 'group_type' AND pm2.meta_value = 'church' )
             INNER JOIN $wpdb->dt_location_grid lg ON (
                 lg.grid_id = pm.meta_value
                 AND (
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $country_only ) . " )
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " )
                    OR
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL
                    OR
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL
                    OR
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL
                 )
             )
             WHERE pm.meta_key = 'location_grid'
@@ -76,7 +83,14 @@ class Zume_Metrics_Endpoints
 
         //unique locations for trainings that have completed the session 9
         $distinct_training_locations = $wpdb->get_results( "
-            SELECT DISTINCT(pm.meta_value) as grid_id
+            SELECT Distinct( CASE
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin2_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL THEN lg.admin1_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL THEN lg.admin2_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL THEN lg.admin3_grid_id
+                ELSE NULL
+            END
+            ) as grid_id
             FROM $wpdb->postmeta pm
             INNER JOIN $wpdb->posts p on ( p.ID = pm.post_id AND p.post_type = 'trainings' )
             LEFT JOIN $wpdb->postmeta pm2 on ( pm.post_id = pm2.post_id AND pm2.meta_key = 'zume_group_id' )
@@ -84,13 +98,13 @@ class Zume_Metrics_Endpoints
             INNER JOIN $wpdb->dt_location_grid lg ON (
                 lg.grid_id = pm.meta_value
                 AND (
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $country_only ) . " )
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " )
                    OR
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL
                    OR
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL
                    OR
-                   lg.admin0_grid_id in ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL
                 )
             )
             WHERE um.meta_value LIKE '%\"session_9\";b:1;%'
