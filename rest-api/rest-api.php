@@ -46,21 +46,25 @@ class Zume_Metrics_Endpoints
     public function public_endpoint( WP_REST_Request $request ) {
 
         $country_only = [ 100000000, 100001073, 100024783, 100047360, 100054604, 100056004, 100056005, 100089588, 100131318, 100222390, 100238556, 100241760, 100243745, 100245356, 100247244, 100253792, 100254764, 100260851, 100341224, 100343035, 100367575, 100380097 ];
-        $admin_1_countries = [ 100314737, 100083318, 100041128, 100133112, 100341242, 100132648, 100222839, 100379914, 100055707, 100379993, 100130389, 100255271, 100363975, 100248845, 100001527, 100342458, 100024289, 100132795, 100054605, 100253456, 100342975, 100074571, 100001074, 100001519, 100002788, 100002896, 100002901, 100018100, 100024581, 100024587, 100024909, 100024916, 100041079, 100055703, 100056006, 100056014, 100072552, 100130426, 100131154, 100132213, 100132221, 100132628, 100132775, 100222391, 100222967, 100231206, 100231221, 100238557, 100238819, 100240981, 100241004, 100241015, 100241376, 100243746, 100247245, 100248823, 100249195, 100249812, 100249853, 100253438, 100254765, 100259807, 100306566, 100309569, 100314694, 100314700, 100340252, 100341218, 100341239, 100341889, 100341992, 100343036, 100343138, 100350956, 100350960, 100351536, 100351542, 100352861, 100363965, 100367576, 100367947, 100380048, 100380091 ];
-        $admin_2_countries = [ 100000001, 100000364, 100001091, 100002260, 100002800, 100002910, 100003491, 100005723, 100005813, 100017364, 100018011, 100018104, 100024620, 100024784, 100024928, 100025352, 100041091, 100041355, 100041402, 100041471, 100047361, 100050338, 100053495, 100053847, 100054276, 100054543, 100055730, 100055819, 100056020, 100056133, 100072535, 100072563, 100072668, 100072856, 100074143, 100074514, 100088242, 100089023, 100089567, 100130431, 100130478, 100131072, 100131170, 100131319, 100131698, 100131733, 100131777, 100131824, 100131864, 100132227, 100132604, 100133694, 100134422, 100385182, 100219316, 100222418, 100222718, 100222975, 100231234, 100231299, 100233158, 100233347, 100235142, 100235196, 100238572, 100238826, 100238987, 100240594, 100241027, 100241387, 100241446, 100241717, 100241749, 100241761, 100243784, 100245357, 100247331, 100248384, 100248458, 100249200, 100249754, 100249816, 100249866, 100253277, 100253577, 100253616, 100253793, 100254606, 100254765, 100255729, 100259822, 100259917, 100260160, 100260852, 100262889, 100306583, 100306693, 100309648, 100309849, 100314438, 100314675, 100314708, 100317719, 100322810, 100340266, 100340602, 100341225, 100341436, 100341608, 100341899, 100341995, 100342182, 100342287, 100342297, 100342370, 100342663, 100343063, 100343145, 100343572, 100343599, 100350531, 100350967, 100351558, 100351851, 100352871, 100352901, 100356776, 100363308, 100364199, 100367399, 100367583, 100367953, 100367977, 100379984, 100380053, 100380099, 100380454, 100385027, 100385110, 100385185 ];
+        # admin 1 for little highly divided countries
+        #'Romania', 'Estonia', 'Bhutan', 'Croatia', 'Solomon Islands', 'Guyana', 'Iceland', 'Vanuatu', 'Cape Verde', 'Samoa', 'Faroe Islands', 'Norway', 'Uruguay', 'Mongolia', 'United Arab Emirates', 'Slovenia', 'Bulgaria', 'Honduras', 'Columbia', 'Namibia', 'Switzerland', 'Western Sahara'
+        $admin_1_countries = [ 100314737, 100083318, 100041128, 100133112, 100341242, 100132648, 100222839, 100379914, 100055707, 100379993, 100130389, 100255271, 100363975, 100248845, 100001527, 100342458, 100024289, 100132795, 100054605, 100253456, 100342975, 100074571 ];
+        # admin 3 for big countries
+        #'China', 'India', 'France', 'Spain', 'Pakistan', 'Bangladesh'
         $admin_3_countries = [ 100050711, 100219347, 100089589, 100074576, 100259978, 100018514 ];
 
+//        $list = Zume_App_Heatmap::query_saturation_list();
+//        $list2 = Zume_App_Heatmap::query_saturation_list_v2();
 
         global $wpdb;
         $distinct_church_locations = $wpdb->get_results( "
-            SELECT Distinct( CASE
+            SELECT DISTINCT( CASE
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin0_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL THEN lg.admin1_grid_id
-                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL THEN lg.admin2_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL THEN lg.admin3_grid_id
-                ELSE NULL
-            END
-            ) as grid_id
+                WHEN lg.level = 1 THEN lg.admin1_grid_id
+                ELSE lg.admin2_grid_id
+            END ) as grid_id
             FROM $wpdb->postmeta pm
             INNER JOIN $wpdb->posts p on ( p.ID = pm.post_id AND p.post_type = 'groups' )
             INNER JOIN $wpdb->postmeta pm2 on ( pm.post_id = pm2.post_id AND pm2.meta_key = 'group_type' AND pm2.meta_value = 'church' )
@@ -71,9 +75,11 @@ class Zume_Metrics_Endpoints
                    OR
                    lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL
                    OR
-                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL
-                   OR
                    lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL
+                   OR
+                   lg.level = 1 AND lg.grid_id NOT IN ( SELECT lg22.admin1_grid_id FROM $wpdb->dt_location_grid lg22 WHERE lg22.level = 2 AND lg22.admin1_grid_id = lg.grid_id )
+                   OR
+                   lg.level >= 2 AND lg.admin0_grid_id NOT IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin0_grid_id NOT IN ( " . dt_array_to_sql( $admin_3_countries ) . " )
                 )
             )
             WHERE pm.meta_key = 'location_grid'
@@ -83,14 +89,13 @@ class Zume_Metrics_Endpoints
 
         //unique locations for trainings that have completed the session 9
         $distinct_training_locations = $wpdb->get_results( "
-            SELECT Distinct( CASE
+            SELECT DISTINCT( CASE
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin0_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL THEN lg.admin1_grid_id
-                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL THEN lg.admin2_grid_id
                 WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL THEN lg.admin3_grid_id
-                ELSE NULL
-            END
-            ) as grid_id
+                WHEN lg.level = 1 THEN lg.admin1_grid_id
+                ELSE lg.admin2_grid_id
+            END ) as grid_id
             FROM $wpdb->postmeta pm
             INNER JOIN $wpdb->posts p on ( p.ID = pm.post_id AND p.post_type = 'trainings' )
             LEFT JOIN $wpdb->postmeta pm2 on ( pm.post_id = pm2.post_id AND pm2.meta_key = 'zume_group_id' )
@@ -102,9 +107,11 @@ class Zume_Metrics_Endpoints
                    OR
                    lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL
                    OR
-                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_2_countries ) . " ) AND lg.admin2_grid_id IS NOT NULL
-                   OR
                    lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL
+                   OR
+                   lg.level = 1 AND lg.grid_id NOT IN ( SELECT lg22.admin1_grid_id FROM $wpdb->dt_location_grid lg22 WHERE lg22.level = 2 AND lg22.admin1_grid_id = lg.grid_id )
+                   OR
+                   lg.level >= 2 AND lg.admin0_grid_id NOT IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin0_grid_id NOT IN ( " . dt_array_to_sql( $admin_3_countries ) . " )
                 )
             )
             WHERE um.meta_value LIKE '%\"session_9\";b:1;%'
