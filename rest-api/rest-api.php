@@ -26,8 +26,8 @@ class Zume_Metrics_Endpoints
         #'Romania', 'Estonia', 'Bhutan', 'Croatia', 'Solomon Islands', 'Guyana', 'Iceland', 'Vanuatu', 'Cape Verde', 'Samoa', 'Faroe Islands', 'Norway', 'Uruguay', 'Mongolia', 'United Arab Emirates', 'Slovenia', 'Bulgaria', 'Honduras', 'Columbia', 'Namibia', 'Switzerland', 'Western Sahara'
         $admin_1_countries = [ 100314737, 100083318, 100041128, 100133112, 100341242, 100132648, 100222839, 100379914, 100055707, 100379993, 100130389, 100255271, 100363975, 100248845, 100001527, 100342458, 100024289, 100132795, 100054605, 100253456, 100342975, 100074571 ];
         # admin 3 for big countries
-        #'China', 'India', 'France', 'Spain', 'Pakistan', 'Bangladesh'
-        $admin_3_countries = [ 100050711, 100219347, 100089589, 100074576, 100259978, 100018514 ];
+        #'China', 'India', 'France', 'Pakistan', 'Bangladesh'
+        $admin_3_countries = [ 100050711, 100219347, 100089589, 100259978, 100018514 ];
 
         global $wpdb;
         $distinct_church_locations = $wpdb->get_results( "
