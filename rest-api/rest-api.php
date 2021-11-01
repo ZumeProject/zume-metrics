@@ -94,9 +94,40 @@ class Zume_Metrics_Endpoints
 
         $unique_training_locations = sizeof( $distinct_training_locations );
 
+        //unique locations for trainings that have completed the session 9
+        $distinct_trainee_locations = $wpdb->get_results( "
+            SELECT DISTINCT( CASE
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " ) THEN lg.admin0_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL THEN lg.admin1_grid_id
+                WHEN lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL THEN lg.admin3_grid_id
+                WHEN lg.level = 1 THEN lg.admin1_grid_id
+                ELSE lg.admin2_grid_id
+            END ) as grid_id
+            FROM $wpdb->usermeta um
+            INNER JOIN $wpdb->usermeta um2 ON ( um.user_id = um2.user_id AND um2.meta_key = 'zume_location_grid_from_ip')
+            INNER JOIN $wpdb->dt_location_grid lg ON (
+                lg.grid_id = um2.meta_value
+                AND (
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $country_only ) . " )
+                   OR
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin1_grid_id IS NOT NULL
+                   OR
+                   lg.admin0_grid_id IN ( " . dt_array_to_sql( $admin_3_countries ) . " ) AND lg.admin3_grid_id IS NOT NULL
+                   OR
+                   lg.level = 1 AND lg.grid_id NOT IN ( SELECT lg22.admin1_grid_id FROM $wpdb->dt_location_grid lg22 WHERE lg22.level = 2 AND lg22.admin1_grid_id = lg.grid_id )
+                   OR
+                   lg.level >= 2 AND lg.admin0_grid_id NOT IN ( " . dt_array_to_sql( $admin_1_countries ) . " ) AND lg.admin0_grid_id NOT IN ( " . dt_array_to_sql( $admin_3_countries ) . " )
+                )
+            )
+            WHERE um.meta_key = 'zume_training_complete'
+        ", ARRAY_A );
+
+        $unique_trainee_locations = sizeof( $distinct_trainee_locations );
+
         return [
             "unique_church_locations" => $unique_church_locations,
             "unique_training_locations" => $unique_training_locations,
+            "unique_trainee_locations" => $unique_trainee_locations,
         ];
     }
 
